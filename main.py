@@ -38,8 +38,20 @@ def scrapeContent(html):
   for link in links:
     url = link["href"]
     if(url[8:15] == "mega.nz"):
-      writeToFile(url)
-      links_found+=1
+      if checkMega(url) is True:
+        writeToFile(url)
+        links_found+=1
+
+def checkMega(url):
+  if url[16:18] == "fo": 
+    ext = url[23:31]
+  else: 
+    ext = url[21:29]
+  url = "https://eu.api.mega.co.nz/cs?id&n=" + ext
+  response = requests.post(url, '{a:"f", c:1, r:1, ca:1}')
+  if(response.text == "-2"):
+    return True
+  return False
 
 def writeToFile(content):
   global file_name
@@ -63,4 +75,3 @@ if __name__ == '__main__':
 
   while True:
     sys.stdout.write("\rMega Links found: " + str(links_found))
-    links_found2 = links_found
